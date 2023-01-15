@@ -2,7 +2,19 @@ import { ReactNode, useEffect, useState } from "react"
 import { render } from "react-dom"
 import { createRoot } from "react-dom/client"
 
-const ENABLE_NEW_REACT_18_ROOT = false
+// This switches between ReactDOM.render (if false) and ReactDOM.createRoot (if true). See end of the file.
+const ENABLE_NEW_REACT_18_CREATEROOT = true
+
+// This memorize the latest event fires from the button.
+let currentEvent: Event|null = null
+
+// A global click listenenr on window.
+window.addEventListener("click", (event) => {
+    console.log(
+        `Global click handler: %c${event === currentEvent ? "Same event": "Different event"}`,
+        event === currentEvent ? "color: #00aa00" : "color: #dd0000",
+    )
+})
 
 function App() {
     const [displayPopup, setDisplayPopup] = useState<boolean>(false)
@@ -12,9 +24,11 @@ function App() {
             <button
                 type="button"
                 onClick={(event) => {
+                    console.log("Button click handler (React)")
+                    currentEvent = event.nativeEvent
                     event.preventDefault()
 
-                    // The following line needs to be uncommented if using the new React 18 root.
+                    // The following line needs to be uncommented if using the new React 18 createRoot (Quick fix?).
                     // event.stopPropagation()
 
                     setDisplayPopup(true)
@@ -45,10 +59,17 @@ interface PopupProps {
 }
 
 function Popup(props: PopupProps) {
+    console.log("Rendering Popup")
+
     useEffect(() => {
-        // We want the popup to close on a single click (left or right) anywhere on the page.
+        // We want the popup to close on a single click (left or right) anywhere on the page. FOr that purpose, we had
+        // an event listener on the window to catch clicks from everywhere.
 
         function handleCloseByClick(event: Event) {
+            console.log(
+                `Popup click handler: %c${event === currentEvent ? "Same event": "Different event"}`,
+                event === currentEvent ? "color: #00aa00" : "color: #dd0000",
+            )
             event.preventDefault()
             props.onClose()
         }
@@ -80,7 +101,7 @@ function Popup(props: PopupProps) {
     )
 }
 
-if (ENABLE_NEW_REACT_18_ROOT) {
+if (ENABLE_NEW_REACT_18_CREATEROOT) {
     // New in React 18
     createRoot(document.getElementById("root") as HTMLDivElement).render(<App />)
 } else {

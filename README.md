@@ -13,12 +13,12 @@ React version: `18.2.0`
 
 ### Not working way using `ReactDOM.createRoot`
 
-1. Change the value of the `ENABLE_NEW_REACT_18_ROOT` in file `src/index.tsx` to `true` (The page should reload)
+1. Change the value of the `ENABLE_NEW_REACT_18_CREATEROOT` in file `src/index.tsx` to `true` (The page should reload)
 2. Click the button, ... and nothing happens (well graphically at least, because in the console, we can see that the popup is closed right after opening)
 
 ## Quick fix
 
-A quick fix is to uncomment the line `18` (`event.stopPropagation()`) to make it work again.
+A quick fix is to uncomment the line `32` (`event.stopPropagation()`) to make it work again.
 
 It looks like, with the new ReactDOM.createRoot function, that the popup rendering is done before the processing of the initial button's click event is even finished...
 
